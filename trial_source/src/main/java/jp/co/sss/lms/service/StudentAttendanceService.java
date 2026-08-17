@@ -1,9 +1,11 @@
 package jp.co.sss.lms.service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -247,8 +249,12 @@ public class StudentAttendanceService {
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
 			dailyAttendanceForm.setIsToday(attendanceManagementDto.getIsToday());
-			dailyAttendanceForm.setDispTrainingDate(dateUtil
-					.dateToString(attendanceManagementDto.getTrainingDate(), "yyyy年M月d日(E)"));
+			SimpleDateFormat sdf =
+			        new SimpleDateFormat("yyyy年M月d日(E)", Locale.JAPANESE);
+
+			dailyAttendanceForm.setDispTrainingDate(
+			        sdf.format(attendanceManagementDto.getTrainingDate())
+			);
 			dailyAttendanceForm.setStatusDispName(attendanceManagementDto.getStatusDispName());
 
 			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
@@ -333,5 +339,16 @@ public class StudentAttendanceService {
 		// 完了メッセージ
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
+
+	public int getUnInputCount(Integer courseId, Integer lmsUserId) {
+	    return 0;
+	}
+	public String checkPastAttendance() {
+	    return "過去日の勤怠に未入力があります。";
+	}
+
+	SimpleDateFormat sdf =
+	        new SimpleDateFormat("yyyy年M月d日(E)", Locale.JAPANESE);
+	
 
 }

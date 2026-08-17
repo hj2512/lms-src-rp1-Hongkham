@@ -1,6 +1,7 @@
 package jp.co.sss.lms.controller;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +43,22 @@ public class AttendanceController {
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
 	public String index(Model model) {
 
-		// 勤怠一覧の取得
-		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+	    // 勤怠一覧の取得
+	    List<AttendanceManagementDto> attendanceManagementDtoList =
+	            studentAttendanceService.getAttendanceManagement(
+	                    loginUserDto.getCourseId(),
+	                    loginUserDto.getLmsUserId());
 
-		return "attendance/detail";
+	    model.addAttribute("attendanceManagementDtoList",
+	            attendanceManagementDtoList);
+
+	    // 過去日の勤怠に未入力があるかチェック
+	    String pastAttendanceError =
+	            studentAttendanceService.checkPastAttendance();
+
+	    model.addAttribute("pastAttendanceError", pastAttendanceError);
+
+	    return "attendance/detail";
 	}
 
 	/**
@@ -109,17 +120,34 @@ public class AttendanceController {
 	@RequestMapping(path = "/update")
 	public String update(Model model) {
 
-		// 勤怠管理リストの取得
-		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-		// 勤怠フォームの生成
-		AttendanceForm attendanceForm = studentAttendanceService
-				.setAttendanceForm(attendanceManagementDtoList);
-		model.addAttribute("attendanceForm", attendanceForm);
+	    // 勤怠管理リストの取得
+	    List<AttendanceManagementDto> attendanceManagementDtoList =
+	            studentAttendanceService.getAttendanceManagement(
+	                    loginUserDto.getCourseId(),
+	                    loginUserDto.getLmsUserId());
 
-		return "attendance/update";
+	    // 勤怠フォームの生成
+	    AttendanceForm attendanceForm =
+	            studentAttendanceService.setAttendanceForm(attendanceManagementDtoList);
+
+	    model.addAttribute("attendanceForm", attendanceForm);
+
+	    List<String> hours = new ArrayList<>();
+	    for (int i = 0; i <= 23; i++) {
+	        hours.add(String.format("%02d", i));
+	    }
+
+	    List<String> minutes = new ArrayList<>();
+	    for (int i = 0; i <= 59; i++) {
+	        minutes.add(String.format("%02d", i));
+	    }
+
+	    model.addAttribute("hours", hours);
+	    model.addAttribute("minutes", minutes);
+
+	    return "attendance/update";
+
 	}
-
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
 	 * 
