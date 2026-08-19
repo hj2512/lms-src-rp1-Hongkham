@@ -150,7 +150,7 @@ public class AttendanceController {
 		// 時間リスト
 		List<String> hours = new ArrayList<>();
 
-		for (int i = 0; i <= 23; i++) {
+		for (int i = 0; i <= 24; i++) {
 			hours.add(String.format("%02d", i));
 		}
 
