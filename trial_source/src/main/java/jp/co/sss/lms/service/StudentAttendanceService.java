@@ -63,6 +63,7 @@ public class StudentAttendanceService {
 	                    lmsUserId,
 	                    Constants.DB_FLG_FALSE);
 
+	    
 	    for (AttendanceManagementDto dto : attendanceManagementDtoList) {
 
 	        System.out.println(

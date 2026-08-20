@@ -34,7 +34,7 @@
 			<div class="panel-body">
 				<table class="table table-hover sctionList">
 					<tr th:each="sectionDto : ${categoryDto.courseServiceSectionDtoList}" th:object="${sectionDto}">
-						<td class="w20per">[[*{#dates.format(date,'yyyy年M月d日')}]]</td>
+						<td class="w20per">[[*{#dates.format(date,'yyyy年M月d日(E)')}]]</td>
 						<td class="wh">[[*{sectionName}]]</td>
 						<td class="w20per">
 							<form th:action="@{/section/detail}" method="post">
