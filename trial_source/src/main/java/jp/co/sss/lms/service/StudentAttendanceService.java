@@ -54,38 +54,33 @@ public class StudentAttendanceService {
 	 * @return 勤怠管理画面用DTOリスト
 	 */
 	public List<AttendanceManagementDto> getAttendanceManagement(
-	        Integer courseId,
-	        Integer lmsUserId) {
+			Integer courseId,
+			Integer lmsUserId) {
 
-	    List<AttendanceManagementDto> attendanceManagementDtoList =
-	            tStudentAttendanceMapper.getAttendanceManagement(
-	                    courseId,
-	                    lmsUserId,
-	                    Constants.DB_FLG_FALSE);
+		List<AttendanceManagementDto> attendanceManagementDtoList = tStudentAttendanceMapper.getAttendanceManagement(
+				courseId,
+				lmsUserId,
+				Constants.DB_FLG_FALSE);
 
-	    
-	    for (AttendanceManagementDto dto : attendanceManagementDtoList) {
+		for (AttendanceManagementDto dto : attendanceManagementDtoList) {
 
-	        System.out.println(
-	            "start=" + dto.getTrainingStartTime()
-	            + ", end=" + dto.getTrainingEndTime()
-	        );
+			System.out.println(
+					"start=" + dto.getTrainingStartTime()
+							+ ", end=" + dto.getTrainingEndTime());
 
-	        if (dto.getBlankTime() != null) {
-	            TrainingTime blankTime =
-	                    attendanceUtil.calcBlankTime(dto.getBlankTime());
-	            dto.setBlankTimeValue(String.valueOf(blankTime));
-	        }
+			if (dto.getBlankTime() != null) {
+				TrainingTime blankTime = attendanceUtil.calcBlankTime(dto.getBlankTime());
+				dto.setBlankTimeValue(String.valueOf(blankTime));
+			}
 
-	        AttendanceStatusEnum statusEnum =
-	                AttendanceStatusEnum.getEnum(dto.getStatus());
+			AttendanceStatusEnum statusEnum = AttendanceStatusEnum.getEnum(dto.getStatus());
 
-	        if (statusEnum != null) {
-	            dto.setStatusDispName(statusEnum.name);
-	        }
-	    }
+			if (statusEnum != null) {
+				dto.setStatusDispName(statusEnum.name);
+			}
+		}
 
-	    return attendanceManagementDtoList;
+		return attendanceManagementDtoList;
 	}
 
 	/**
@@ -253,47 +248,42 @@ public class StudentAttendanceService {
 			//エラー発生
 			// 出勤時間
 			dailyAttendanceForm.setTrainingStartTime(
-			        attendanceManagementDto.getTrainingStartTime());
+					attendanceManagementDto.getTrainingStartTime());
 
-			// 退勤時間
 			dailyAttendanceForm.setTrainingEndTime(
-			        attendanceManagementDto.getTrainingEndTime());
+					attendanceManagementDto.getTrainingEndTime());
 
 			// 出勤時間を「時」「分」に分ける
 			if (attendanceManagementDto.getTrainingStartTime() != null
-			        && !attendanceManagementDto.getTrainingStartTime().isEmpty()) {
+					&& !attendanceManagementDto.getTrainingStartTime().isEmpty()) {
 
-			    String[] startTime =
-			            attendanceManagementDto.getTrainingStartTime().split(":");
+				String[] startTime = attendanceManagementDto.getTrainingStartTime().split(":");
 
-			    if (startTime.length == 2) {
-			        dailyAttendanceForm.setTrainingStartHour(startTime[0]);
-			        dailyAttendanceForm.setTrainingStartMinute(startTime[1]);
-			    }
+				if (startTime.length == 2) {
+					dailyAttendanceForm.setTrainingStartTimeHour(startTime[0]);
+					dailyAttendanceForm.setTrainingStartTimeMinute(startTime[1]);
+				}
 			}
 
 			// 退勤時間を「時」「分」に分ける
 			if (attendanceManagementDto.getTrainingEndTime() != null
-			        && !attendanceManagementDto.getTrainingEndTime().isEmpty()) {
+					&& !attendanceManagementDto.getTrainingEndTime().isEmpty()) {
 
-			    String[] endTime =
-			            attendanceManagementDto.getTrainingEndTime().split(":");
+				String[] endTime = attendanceManagementDto.getTrainingEndTime().split(":");
 
-			    if (endTime.length == 2) {
-			        dailyAttendanceForm.setTrainingEndHour(endTime[0]);
-			        dailyAttendanceForm.setTrainingEndMinute(endTime[1]);
-			    }
+				if (endTime.length == 2) {
+					dailyAttendanceForm.setTrainingEndTimeHour(endTime[0]);
+					dailyAttendanceForm.setTrainingEndTimeMinute(endTime[1]);
+				}
 			}
 			dailyAttendanceForm.setStatus(String.valueOf(attendanceManagementDto.getStatus()));
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
 			dailyAttendanceForm.setIsToday(attendanceManagementDto.getIsToday());
-			SimpleDateFormat sdf =
-			        new SimpleDateFormat("yyyy年M月d日(E)", Locale.JAPANESE);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy年M月d日(E)", Locale.JAPANESE);
 
 			dailyAttendanceForm.setDispTrainingDate(
-			        sdf.format(attendanceManagementDto.getTrainingDate())
-			);
+					sdf.format(attendanceManagementDto.getTrainingDate()));
 			dailyAttendanceForm.setStatusDispName(attendanceManagementDto.getStatusDispName());
 
 			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
@@ -331,53 +321,51 @@ public class StudentAttendanceService {
 					.setTrainingDate(dateUtil.parse(dailyAttendanceForm.getTrainingDate()));
 			// 現在の勤怠情報リストのうち、研修日が同じものを更新用エンティティで上書き
 			for (TStudentAttendance entity : tStudentAttendanceList) {
-			    if (entity.getTrainingDate().equals(tStudentAttendance.getTrainingDate())) {
-			        tStudentAttendance = entity;
-			        break;
-			    }
+				if (entity.getTrainingDate().equals(tStudentAttendance.getTrainingDate())) {
+					tStudentAttendance = entity;
+					break;
+				}
 			}
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
 			// 出勤時刻整形
-			String startHour = dailyAttendanceForm.getTrainingStartHour();
-			String startMinute = dailyAttendanceForm.getTrainingStartMinute();
+			String startHour = dailyAttendanceForm.getTrainingStartTimeHour();
+			String startMinute = dailyAttendanceForm.getTrainingStartTimeMinute();
 
 			TrainingTime trainingStartTime = null;
 
 			if (startHour != null && !startHour.isEmpty()
-			        && startMinute != null && !startMinute.isEmpty()) {
+					&& startMinute != null && !startMinute.isEmpty()) {
 
-			    String startTime = startHour + ":" + startMinute;
+				String startTime = startHour + ":" + startMinute;
 
-			    trainingStartTime = new TrainingTime(startTime);
+				trainingStartTime = new TrainingTime(startTime);
 
-			    tStudentAttendance.setTrainingStartTime(
-			            trainingStartTime.getFormattedString()
-			    );
+				tStudentAttendance.setTrainingStartTime(
+						trainingStartTime.getFormattedString());
 
 			} else {
-			    tStudentAttendance.setTrainingStartTime("");
+				tStudentAttendance.setTrainingStartTime("");
 			}
 
 			// 退勤時刻整形
-			String endHour = dailyAttendanceForm.getTrainingEndHour();
-			String endMinute = dailyAttendanceForm.getTrainingEndMinute();
+			String endHour = dailyAttendanceForm.getTrainingEndTimeHour();
+			String endMinute = dailyAttendanceForm.getTrainingEndTimeMinute();
 
 			TrainingTime trainingEndTime = null;
 
 			if (endHour != null && !endHour.isEmpty()
-			        && endMinute != null && !endMinute.isEmpty()) {
+					&& endMinute != null && !endMinute.isEmpty()) {
 
-			    String endTime = endHour + ":" + endMinute;
+				String endTime = endHour + ":" + endMinute;
 
-			    trainingEndTime = new TrainingTime(endTime);
+				trainingEndTime = new TrainingTime(endTime);
 
-			    tStudentAttendance.setTrainingEndTime(
-			            trainingEndTime.getFormattedString()
-			    );
+				tStudentAttendance.setTrainingEndTime(
+						trainingEndTime.getFormattedString());
 
 			} else {
-			    tStudentAttendance.setTrainingEndTime("");
+				tStudentAttendance.setTrainingEndTime("");
 			}
 
 			// 中抜け時間
@@ -413,23 +401,19 @@ public class StudentAttendanceService {
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
 
-	public int getUnInputCount(Integer courseId, Integer lmsUserId) {
-		return tStudentAttendanceMapper.notEnterCount(
-	            courseId,
-	            lmsUserId,
-	            Constants.DB_FLG_FALSE);
+	//未入力チェック
+	public boolean notEnterCheck() {
+
+		Integer courseId = loginUserDto.getCourseId();
+		Integer lmsUserId = loginUserDto.getLmsUserId();
+
+		int unInputCount = tStudentAttendanceMapper.notEnterCount(
+				courseId,
+				lmsUserId,
+				Constants.DB_FLG_FALSE);
+
+		//未入力の勤怠情報がある場合
+		 return unInputCount > 0;
 	}
-	public String checkPastAttendance() {
-	    int unInputCount = getUnInputCount(
-	            loginUserDto.getCourseId(),
-	            loginUserDto.getLmsUserId());
-
-	    if (unInputCount > 0) {
-	        return "過去日の勤怠に未入力があります。";
-	    }
-
-	    return null;
-	}
-
 
 }
