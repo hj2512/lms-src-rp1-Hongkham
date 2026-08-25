@@ -65,9 +65,16 @@ public interface TStudentAttendanceMapper {
 	 */
 	Boolean update(TStudentAttendance tStudentAttendance);
 
-	int notEnterCount(
-			@Param("courseId") Integer courseId,
+	/**
+	 * 過去日の未入力勤怠件数を取得する
+	 *
+	 * @param lmsUserId LMSユーザーID
+	 * @param deleteFlg 削除フラグ
+	 * @param trainingDate 基準日
+	 * @return 未入力の勤怠件数
+	 */
+	Integer notEnterCount(
 			@Param("lmsUserId") Integer lmsUserId,
-			@Param("deleteFlg") Short deleteFlg);
-
+			@Param("deleteFlg") Short deleteFlg,
+			@Param("trainingDate") String trainingDate);
 }

@@ -34,25 +34,30 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 初期表示
+	 * 過去日の勤怠に未入力があるかチェックする
 	 * 
-	 * @param model
+	 * @param model 画面に表示するデータを保持するModel
 	 * @return 勤怠管理画面
+	 * @throws ParseException 日付の変換に失敗した場合
+	 * 
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
-	public String index(Model model) {
+	public String index(Model model) throws ParseException {
 
-		// 勤怠一覧の取得
-		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService.getAttendanceManagement(
-				loginUserDto.getCourseId(),
-				loginUserDto.getLmsUserId());
+		// 勤怠一覧を取得
+		List<AttendanceManagementDto> attendanceManagementDtoList =
+				studentAttendanceService.getAttendanceManagement(
+						loginUserDto.getCourseId(),
+						loginUserDto.getLmsUserId());
 
-		model.addAttribute("attendanceManagementDtoList",
+		model.addAttribute(
+				"attendanceManagementDtoList",
 				attendanceManagementDtoList);
 
-		// 過去日の勤怠に未入力があるかチェック
+		// Task25：過去日の未入力チェック
 		boolean notEnterCheck = studentAttendanceService.notEnterCheck();
 
-		model.addAttribute("notEnterCheck",notEnterCheck);
+		model.addAttribute("notEnterCheck", notEnterCheck);
 
 		return "attendance/detail";
 	}
@@ -171,19 +176,46 @@ public class AttendanceController {
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(
 			AttendanceForm attendanceForm,
-			Model model,
-			BindingResult result) throws ParseException {
+			BindingResult result,
+			Model model) throws ParseException {
 
-		// 更新
+		// Task27：勤怠入力チェック
+		studentAttendanceService.updateInputCheck(attendanceForm, result);
+
+		// エラーがある場合
+		if (result.hasErrors()) {
+
+			// 時リスト
+			List<String> hours = new ArrayList<>();
+			for (int i = 0; i < 24; i++) {
+				hours.add(String.format("%02d", i));
+			}
+
+			// 分リスト
+			List<String> minutes = new ArrayList<>();
+			for (int i = 0; i < 60; i++) {
+				minutes.add(String.format("%02d", i));
+			}
+
+			model.addAttribute("hours", hours);
+			model.addAttribute("minutes", minutes);
+
+			// ★ BindingResultをModelに入れる
+			model.addAttribute("result", result);
+
+			return "attendance/update";
+		}
+
+		// エラーがない場合だけ更新
 		String message = studentAttendanceService.update(attendanceForm);
-
 		model.addAttribute("message", message);
 
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService.getAttendanceManagement(
 				loginUserDto.getCourseId(),
 				loginUserDto.getLmsUserId());
 
-		model.addAttribute("attendanceManagementDtoList",
+		model.addAttribute(
+				"attendanceManagementDtoList",
 				attendanceManagementDtoList);
 
 		return "attendance/detail";
