@@ -480,6 +480,7 @@ public class StudentAttendanceService {
 	 * @param attendanceForm 勤怠フォーム
 	 * @param result 入力チェック結果
 	 */
+	@SuppressWarnings("null")
 	public void updateInputCheck(AttendanceForm attendanceForm, BindingResult result) {
 
 		List<DailyAttendanceForm> attendanceList = attendanceForm.getAttendanceList();
@@ -497,8 +498,8 @@ public class StudentAttendanceService {
 			/*
 			 * 出勤：時だけ入力、または分だけ入力
 			 */
-			if ((startHour == null || startHour.isEmpty())
-					&& startMinute != null && !startMinute.isEmpty()) {
+			if ((startHour != null || startHour.isEmpty())
+					&& startMinute == null && !startMinute.isEmpty()) {
 
 				result.rejectValue(
 						"attendanceList[" + i + "].trainingStartTimeHour",
@@ -518,8 +519,8 @@ public class StudentAttendanceService {
 			/*
 			 * 退勤：時だけ入力、または分だけ入力
 			 */
-			if ((endHour == null || endHour.isEmpty())
-					&& endMinute != null && !endMinute.isEmpty()) {
+			if ((endHour != null || endHour.isEmpty())
+					&& endMinute == null && !endMinute.isEmpty()) {
 
 				result.rejectValue(
 						"attendanceList[" + i + "].trainingEndTimeHour",
@@ -585,11 +586,9 @@ public class StudentAttendanceService {
 			String note = dailyAttendanceForm.getNote();
 
 			if (note != null && note.length() > 100) {
-
-				result.rejectValue(
-						"attendanceList[" + i + "].note",
-						null,
-						"備考は100文字以内で入力してください。");
+			    result.rejectValue(
+			        "attendanceList[" + i + "].note",
+			        "attendance.input.note");
 			}
 		}
 	}
