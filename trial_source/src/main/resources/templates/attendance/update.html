@@ -12,8 +12,8 @@
 	<style>
 		/* エラーになった入力欄 */
 		.input-error {
-			border: 2px solid #dc3545 !important;
-			background-color: #f8d7da !important;
+			border: 1.5px solid #ff4d4d !important;
+			background-color: #ffe0e0 !important;
 		}
 
 		/* エラーメッセージ */
@@ -48,7 +48,7 @@
 		.regular-time-btn {
 			width: 60px;
 			min-width: 60px;
-		
+
 		}
 
 		/*
@@ -69,7 +69,6 @@
 		}
 
 		.attendance-list-scroll {
-			max-height: 600px;
 			overflow-y: auto;
 		}
 	</style>
@@ -81,12 +80,17 @@
 
 		<h2>勤怠管理</h2>
 
+		<!-- 登録完了メッセージ -->
+		<div th:if="${message != null}" class="text-success">
+			<span th:text="${message}"></span>
+		</div>
+
 		<!-- 入力エラー -->
 		<div th:if="${result != null and result.hasErrors()}" class="text-danger">
-
-			<div th:each="error : ${result.allErrors}" th:text="${error.defaultMessage}">
+			<div th:each="error : ${result.allErrors}">
+				<span>* </span>
+				<span th:text="${error.defaultMessage}"></span>
 			</div>
-
 		</div>
 
 	</th:block>
@@ -118,7 +122,7 @@
 			<!-- 更新フォーム -->
 			<form th:action="@{/attendance/update}" th:object="${attendanceForm}" method="post">
 
-<!--				<div class="attendance-list-scroll">-->
+				<div class="attendance-list-scroll">
 
 					<table class="table table-hover dataTable no-footer">
 
@@ -352,6 +356,7 @@
 
 									</td>
 
+
 								</tr>
 
 							</th:block>
@@ -360,7 +365,7 @@
 
 					</table>
 
-<!--				</div>-->
+				</div>
 				<!-- ボタン -->
 				<div class="form-group">
 
@@ -432,8 +437,29 @@
 				document.getElementById("endMinute_" + index);
 
 
-			
+			// 出勤 09：00
+			startHour.value = "09";
+			startMinute.value = "00";
 
+
+			// 退勤 18：00
+			endHour.value = "18";
+			endMinute.value = "00";
+
+		}
+		const scrollArea = document.querySelector(".attendance-list-scroll");
+		const table = scrollArea.querySelector("table");
+		const header = table.querySelector("thead");
+		const rows = table.querySelectorAll("tbody tr");
+
+		if (rows.length > 10) {
+			let height = header.offsetHeight;
+
+			for (let i = 0; i < 10; i++) {
+				height += rows[i].offsetHeight;
+			}
+
+			scrollArea.style.height = height + "px";
 		}
 
 	</script>
