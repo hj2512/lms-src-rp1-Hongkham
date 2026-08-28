@@ -37,10 +37,13 @@ public class AttendanceController {
 	@Autowired
 	private AttendanceUtil attendanceUtil;
 
-	/**
-	 * 勤怠管理画面 初期表示
-	 * 過去日の勤怠に未入力があるかチェックする
-	 */
+	/** * 勤怠管理画面を初期表示する。 
+	 * 
+	 * 過去日の勤怠に未入力があるかチェックする。 
+	 * @param model 画面表示用モデル 
+	 * @return 勤怠管理画面 
+	 *
+	 * @throws ParseException 日付変換に失敗した場合 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
 	public String index(Model model) throws ParseException {
 
@@ -61,8 +64,11 @@ public class AttendanceController {
 		return "attendance/detail";
 	}
 
-	/**
-	 * 勤怠管理画面 『出勤』ボタン押下
+	/** 
+	 * 勤怠管理画面の「出勤」ボタン押下時の処理を行う。 
+	 * 出勤可能かチェックし、問題がなければ出勤時刻を登録・更新する。  
+	 * @param model 画面表示用モデル 
+	 * @return 勤怠管理画面 
 	 */
 	@RequestMapping(path = "/detail", params = "punchIn", method = RequestMethod.POST)
 	public String punchIn(Model model) {
@@ -90,9 +96,12 @@ public class AttendanceController {
 		return "attendance/detail";
 	}
 
-	/**
-	 * 勤怠管理画面 『退勤』ボタン押下
-	 */
+	/** * 勤怠管理画面の「退勤」ボタン押下時の処理を行う。 
+	* 退勤可能かチェックし、問題がなければ退勤時刻を更新する。 
+	* 
+	* @param model 画面表示用モデル 
+	* @return 勤怠管理画面 
+	*/
 	@RequestMapping(path = "/detail", params = "punchOut", method = RequestMethod.POST)
 	public String punchOut(Model model) {
 
@@ -119,10 +128,14 @@ public class AttendanceController {
 		return "attendance/detail";
 	}
 
-	/**
-	 * 勤怠管理画面
-	 * 『勤怠情報を直接編集する』リンク押下
-	 */
+	/** 
+	* 勤怠情報直接変更画面を表示する。 
+	* 勤怠情報を取得し、編集フォームに設定する。 
+	* また、出勤・退勤時刻の選択用リストを設定する。 
+	* 
+	* @param model 画面表示用モデル 
+	* @return 勤怠情報直接変更画面 
+	*/
 	@RequestMapping(path = "/update")
 	public String update(Model model) {
 
@@ -155,9 +168,18 @@ public class AttendanceController {
 		return "attendance/update";
 	}
 
-	/**
-	 * 勤怠情報直接変更画面 『更新』ボタン押下
-	 */
+	/** 
+	* 勤怠情報直接変更画面の「更新」ボタン押下時の処理を行う。 
+	* 入力チェックを行い、エラーがある場合は編集画面を再表示する。 
+	* エラーがない場合は勤怠情報を登録・更新し、勤怠管理画面へリダイレクトする。 
+	* 
+	* @param attendanceForm 勤怠フォーム * @param result 入力チェック結果 
+	* @param model 画面表示用モデル 
+	* @param redirectAttributes リダイレクト先へ値を引き継ぐための属性 
+	* @return 入力エラー時は勤怠情報直接変更画面、 
+	* 正常終了時は勤怠管理画面へリダイレクト 
+	* @throws ParseException 日付変換に失敗した場合 
+	*/
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(
 			AttendanceForm attendanceForm,

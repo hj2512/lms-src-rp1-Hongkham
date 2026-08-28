@@ -454,6 +454,7 @@ public class StudentAttendanceService {
 
 	/**
 	 * 過去日の未入力勤怠をチェックする
+	 *
 	 * @return 未入力の勤怠がある場合はtrue、ない場合はfalse
 	 * @throws ParseException 日付変換に失敗した場合
 	 */
@@ -474,12 +475,6 @@ public class StudentAttendanceService {
 		return unInputCount > 0;
 	}
 
-	/**
-	 * 勤怠情報更新時の入力チェック
-	 *
-	 * @param attendanceForm 勤怠フォーム
-	 * @param result 入力チェック結果
-	 */
 	/**
 	 * 勤怠情報更新時の入力チェック
 	 *
@@ -627,17 +622,17 @@ public class StudentAttendanceService {
 				}
 			}
 
-			/*
-			 * 備考100文字以内
-			 */
+			// 備考100文字以内
 			String note = dailyAttendanceForm.getNote();
 
 			if (note != null && note.length() > 100) {
-
 				result.rejectValue(
 						"attendanceList[" + i + "].note",
-						"attendance.input.note",
-						"備考は100文字以内で入力してください。");
+						"noteLength",
+						new Object[] { 100 },
+						messageUtil.getMessage(
+								"noteLength",
+								new String[] { "100" }));
 			}
 		}
 	}
