@@ -65,10 +65,6 @@ public class StudentAttendanceService {
 
 		for (AttendanceManagementDto dto : attendanceManagementDtoList) {
 
-			System.out.println(
-					"start=" + dto.getTrainingStartTime()
-							+ ", end=" + dto.getTrainingEndTime());
-
 			if (dto.getBlankTime() != null) {
 				TrainingTime blankTime = attendanceUtil.calcBlankTime(dto.getBlankTime());
 				dto.setBlankTimeValue(String.valueOf(blankTime));
